@@ -59,17 +59,20 @@ namespace Dynastream.Fit
             byte? index = mesg.GetDeveloperDataIndex();
             if (index == null)
                 return;
-
-            m_developerDataIdMesgs.Add(index.Value, mesg);
+            
+            /***********************************************************************************************
+            * The following, commented out line appears to be the cause of the "An item with the same key 
+            * has already been added" exception. The key already exists in the dictionary. Updating the 
+            * value instead of performing a .Add() seems to avoid the error? Not sure if there are any 
+            * other negative repercussions...
+            *   - Eric.Davis_2017.03.08
+            ***********************************************************************************************/
+            //m_developerDataIdMesgs.Add(index.Value, mesg);
+            m_developerDataIdMesgs[index.Value] = mesg;
 
             // Remove all fields currently associated with this developer
-            var keysToRemove =
-                m_fieldDescriptionMesgs.Keys
-                                  .Where(
-                                      x =>
-                                          x.DeveloperDataIndex ==
-                                          index)
-                                  .ToList();
+            var keysToRemove = m_fieldDescriptionMesgs.Keys.Where(x => x.DeveloperDataIndex == index).ToList();
+            
             foreach (var key in keysToRemove)
             {
                 m_fieldDescriptionMesgs.Remove(key);
